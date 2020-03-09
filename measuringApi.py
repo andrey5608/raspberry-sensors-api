@@ -10,7 +10,7 @@ app = Flask(__name__)
 CORS(app)
 
 
-def getTempAndHumidity():
+def get_temp_and_humidity():
     humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT_PIN)
     if humidity is not None and temperature is not None:
         return temperature, humidity
@@ -19,23 +19,23 @@ def getTempAndHumidity():
         return temperature, humidity
 
 
-def getBoardTemp():
+def get_board_temp():
     output = str(subprocess.check_output("/usr/bin/vcgencmd measure_temp", stderr=subprocess.STDOUT, shell=True))
     temperature = re.search(r'[0-9]+\.[0-9]+', output)
     return temperature.group()
 
 
-def formatTempAndHumidity():
-    temperatureValue, humidityValue = getTempAndHumidity()
+def format_temp_and_humidity():
+    temperatureValue, humidityValue = get_temp_and_humidity()
     return {
         'sensorsData':
-            {'temperature': temperatureValue, 'humidity': humidityValue, 'boardCpuTemp': getBoardTemp()}
+            {'temperature': temperatureValue, 'humidity': humidityValue, 'boardCpuTemp': get_board_temp()}
     }
 
 
 @app.route("/tempAndHumidity", methods=["GET"])
-def getTemperatureAndHumidity():
-    return jsonify(formatTempAndHumidity())
+def get_temperature_and_humidity():
+    return jsonify(format_temp_and_humidity())
 
 
 if __name__ == '__main__':
